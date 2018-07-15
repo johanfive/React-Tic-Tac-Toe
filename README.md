@@ -62,3 +62,51 @@ const desc
 let desc
 ```
 And `if` the `index` of the `move` currently displayed `matches` the `stepNumber`, then we are viewing the step the link refers to.
+
+# Point 3
+## Rewrite Board to use two loops to make the squares instead of hardcoding them.
+```
+// class Board
+
+
+// renderSquare
+
+// ...
+return (
+      <Square
+        key={i}
+        // ...
+    />
+);
+
+
+// render
+
+render() {
+    const board = [];
+    for (let i = 0; i < 3; i++) {
+        const squares = [];
+        for (let j = 0; j < 3; j++) {
+            squares.push(this.renderSquare((i * 3) + j))
+        }
+        const row = <div className="board-row" key={i}>{squares}</div>;
+        board.push(row);
+    }
+    return <div>{board}</div>;
+  }
+```
+
+The key thing here is to remember `jsx`'s magic and that when we pass in a `simple array` as a variable to a jsx element, React just intelligently figures out what to render.
+
+We also need to specify a unique `key` for each element of an array otherwise we get the following warning:
+> Warning: Each child in an array or iterator should have a unique "key" prop.
+
+Hence
+```
+<Square key={i} ... />
+```
+
+The 1st loop speciffies how many `divs` we want. `3` divs === 3 `rows`. `i` becomes the unique index of each div.
+
+The 2nd loop speciffies how many `<Square />`s we want `per row`. Both `i` & `j` are used to calculate the unique index of each square.
+There are `9` squares in total and their `indices` must be a continuity from `0 to 8` in increments of 1.
