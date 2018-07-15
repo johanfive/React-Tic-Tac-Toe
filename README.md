@@ -42,3 +42,23 @@ const { history, stepNumber } = this.state;
 ```
 And the `if` there is `no winner` but we have reached `step #9` then there is no more moves left to play, therefore this is a `draw`.
 Otherwise, we carry on.
+
+# Point 2
+## Bold the currently selected item in the move list.
+Admittedly even easier than point `6`, but still also a lot simpler than point `1`.
+
+```
+let desc = move ?
+    'Go to move #' + move :
+    'Go to game start';
+if (move === stepNumber) {
+    desc = <b>{desc}</b>;
+}
+```
+We make desc modifiable
+```
+const desc
+// becomes:
+let desc
+```
+And `if` the `index` of the `move` currently displayed `matches` the `stepNumber`, then we are viewing the step the link refers to.
