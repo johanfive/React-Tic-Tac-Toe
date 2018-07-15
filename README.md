@@ -281,3 +281,152 @@ const Square = props => (
 ```
 Et voil&#224;, glorious green!
 
+And now for what was supposed to be the easiest:
+
+# Point 1
+## Display the location for each move in the format (col, row) in the move history list.
+
+There is a couple things we need in order to show the location of a particular move:
+- We must distinguish which Square has been ticked the latest
+- We must calculate the location of this square
+
+So we make functions:
+
+```
+/**
+ * Get which square is different in the current board
+ * compared to the previous one
+ * @param {array} previous. The squares prop of a particular step in history
+ * @param {array} current. The squares prop of the step being assessed
+ */
+function getNewMove(previous, current) {
+    let nextMove = {};
+    current.forEach((index, i) => {
+        if (previous[i] !== index) {
+            nextMove.index = i;
+            nextMove.player = current[i];
+        }
+    });
+    return nextMove;
+}
+```
+Given a Square's index, return its location on the Board
+```
+function getLocation(index) {
+    const row = getRowNum(index);
+    const col = getColNum(index);
+    return {row, col};
+}
+```
+Given a Square's index, return the row it belongs to on the Board.
+```
+function getRowNum(index) {
+    let row = 1;
+    if (index > 2) {
+        row = index > 5 ? 3 : 2;
+    }
+    return row;
+}
+```
+Given a Square's index, return the column it belongs to on the Board.
+```
+function getColNum(index) {
+    let col = 3;
+    if (index % 3 === 0) {
+        col = 1;
+    } else if (index === 1 || index === 4 || index === 7) {
+        col = 2;
+    }
+    return col;
+}
+```
+
+And now we use them.
+
+- First we determine the previous state of the Board
+```
+// Game render method
+
+// ...
+const moves = history.map((step, move) => {
+    const previous = history[move - 1];
+    // ...
+}
+```
+
+- So that we can determine the new move
+```
+const newMove = getNewMove(previous.squares, step.squares);
+```
+in
+```
+const moves = history.map((step, move) => {
+    const previous = history[move - 1];
+    if (previous) { // There is no prior move at the beginning of the game
+        const newMove = getNewMove(previous.squares, step.squares);
+    }
+    // ...
+}
+```
+
+- And from there we can get its location
+```
+location = getLocation(newMove.index);
+```
+in
+```
+const moves = history.map((step, move) => {
+    const previous = history[move - 1];
+    let location;
+    if (previous) {
+        const newMove = getNewMove(previous.squares, step.squares);
+        location = getLocation(newMove.index);
+    }
+    // ...
+}
+```
+
+- This allows us to enrich the moves list with location info.
+
+`Instead` of doing something like:
+```
+let desc = move ?
+    `Go to move # + ${move} (${location.row}, ${location.col})` :
+    'Go to game start';
+```
+
+I prefer to get the location info out of the button,
+and provide a `tooltip` so that we know what each number corresponds to.
+```
+const moves = history.map((step, move) => {
+    const previous = history[move - 1];
+    let location, locInfo; // add locInfo
+    if (previous) {
+        const newMove = getNewMove(previous.squares, step.squares);
+        location = getLocation(newMove.index);
+        const row = <div className="tooltip">{location.row}<span className="tooltiptext">Row</span></div>;
+        const col = <div className="tooltip">{location.col}<span className="tooltiptext">Column</span></div>;
+        locInfo = <small style={{color: 'grey'}}>({row}, {col})</small>;
+    }
+    // ...
+}
+```
+(Remember to update the CSS file so the tooltip looks nice. I got mine straight for W3S [here](https://www.w3schools.com/howto/howto_css_tooltip.asp))
+
+- Now we can insert the location information in the moves list
+```
+return (
+    <li key={move}>
+        <button onClick={() => this.jumpTo(move)}>{desc}</button>
+        &nbsp;{locInfo}
+    </li>
+);
+```
+
+- Bonus: it's now easy to specify which player is making the move
+```
+if (previous) {
+    // ...
+    locInfo = <small style={{color: 'grey'}}>{newMove.player} at ({row}, {col})</small>;
+}
+```

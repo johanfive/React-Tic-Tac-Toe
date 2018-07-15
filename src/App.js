@@ -91,6 +91,15 @@ class Game extends React.Component {
     const winner = calculateWinner(current.squares);
 
     const moves = history.map((step, move) => {
+      const previous = history[move - 1];
+      let location, locInfo;
+      if (previous) {
+        const newMove = getNewMove(previous.squares, step.squares);
+        location = getLocation(newMove.index);
+        const row = <div className="tooltip">{location.row}<span className="tooltiptext">Row</span></div>;
+        const col = <div className="tooltip">{location.col}<span className="tooltiptext">Column</span></div>;
+        locInfo = <small style={{color: 'grey'}}>{newMove.player} at ({row}, {col})</small>;
+      }
       let desc = move ?
         'Go to move #' + move :
         'Go to game start';
@@ -100,6 +109,7 @@ class Game extends React.Component {
       return (
         <li key={move}>
           <button onClick={() => this.jumpTo(move)}>{desc}</button>
+          &nbsp;{locInfo}
         </li>
       );
     });
@@ -164,6 +174,42 @@ function calculateWinner(squares) {
     }
   }
   return null;
+}
+
+
+function getNewMove(previous, current) {
+  let nextMove = {};
+  current.forEach((index, i) => {
+    if (previous[i] !== index) {
+      nextMove.index = i;
+      nextMove.player = current[i];
+    }
+  });
+  return nextMove;
+}
+
+function getLocation(index) {
+  const row = getRowNum(index);
+  const col = getColNum(index);
+  return {row, col};
+}
+
+function getRowNum(index) {
+  let row = 1;
+  if (index > 2) {
+    row = index > 5 ? 3 : 2;
+  }
+  return row;
+}
+
+function getColNum(index) {
+  let col = 3;
+  if (index % 3 === 0) {
+    col = 1;
+  } else if (index === 1 || index === 4 || index === 7) {
+    col = 2;
+  }
+  return col;
 }
 
 
