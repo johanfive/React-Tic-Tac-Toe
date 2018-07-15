@@ -30,3 +30,15 @@ if (winner) {
     status = "Next player: " + (this.state.xIsNext ? "X" : "O");
 }
 ```
+We destructure
+```
+const history = this.state.history;
+// becomes:
+const { history } = this.state;
+```
+We get stepNumber
+```
+const { history, stepNumber } = this.state;
+```
+And the `if` there is `no winner` but we have reached `step #9` then there is no more moves left to play, therefore this is a `draw`.
+Otherwise, we carry on.
