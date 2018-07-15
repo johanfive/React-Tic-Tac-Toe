@@ -110,3 +110,46 @@ The 1st loop speciffies how many `divs` we want. `3` divs === 3 `rows`. `i` beco
 
 The 2nd loop speciffies how many `<Square />`s we want `per row`. Both `i` & `j` are used to calculate the unique index of each square.
 There are `9` squares in total and their `indices` must be a continuity from `0 to 8` in increments of 1.
+
+# Point 4
+## Add a toggle button that lets you sort the moves in either ascending or descending order.
+
+We create a new variable in the `state` of `Game`, and set its default value to false.
+```
+this.state = {
+      // ...
+      descOrder: false
+    };
+```
+We create a function to switch its value from the opposite of what it last was.
+If false, the order is ascending, if true, the order is descending.
+```
+toggleOrder() {
+    this.setState({
+      descOrder: !this.state.descOrder
+    });
+  }
+```
+In the render method we get descOrder
+```
+const { history, stepNumber, descOrder } = this.state;
+```
+If descOrder is true, we sort the list of moves in descending order
+```
+let reversed; // We need this one to update the numbers of each <li> in the <ol>
+    if (descOrder) {
+      moves.sort(((a, b) => a.key < b.key)); // pass a compareFunction to Array.sort()
+      reversed = 'reversed'; // For HTML5 <ol reversed>
+    }
+```
+We create a toggle button that runs the toggle function when clicked
+```
+const toggleOrder = <button onClick={() => this.toggleOrder()}>Toggle</button>
+```
+We update the return value of the render method
+```
+<div className="game-info">
+    <div>{status}</div>
+    <ol reversed={reversed}>{toggleOrder}{moves}</ol>
+</div>
+```
