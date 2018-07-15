@@ -153,3 +153,131 @@ We update the return value of the render method
     <ol reversed={reversed}>{toggleOrder}{moves}</ol>
 </div>
 ```
+
+# Point 5
+## When someone wins, highlight the three squares that caused the win.
+
+First, we modify the return value of the calculateWinner function
+```
+if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+    const winner = {
+        name: squares[a],
+        line: lines[i]
+    }
+    return winner;
+}
+
+```
+Now instead of just getting an `X` or an `O`, we also get the winning line (eg: `[0, 1, 2]`).
+
+And we make use of it in the render method of `Game`
+```
+// ...
+const winner = calculateWinner(current.squares); // unchanged except for its return value
+//...
+let status;
+let winningLine;
+if (winner) {
+    status = `Winner: ${winner.name}`;
+    winningLine = winner.line;
+}
+// ...
+```
+We pass the `winning line` as a `prop` to `<Board />`
+```
+ <div className="game-board">
+    <Board
+        winningLine={winningLine}
+        // ...
+    />
+</div>
+```
+We update `<Board />`'s `renderSquare` to make use of its new `winningLine prop`:
+- we destructure
+```
+renderSquare(i) {
+    return (
+      <Square
+        key={i}
+        value={this.props.squares[i]}
+        onClick={() => this.props.onClick(i)}
+      />
+    );
+  }
+```
+becomes
+```
+renderSquare(i) {
+    const { squares } = this.props;
+    let value = squares[i];
+    return (
+      <Square
+        key={i}
+        value={value}
+        onClick={() => this.props.onClick(i)}
+      />
+    );
+  }
+```
+- we make use of the winningLine prop. If the index of the square being rendered
+is equal to any of the values of the winning line,
+then this square should be highlighted
+```
+const { squares, winningLine } = this.props;
+// ...
+if (winningLine && (winningLine.some(position => position === i))) {
+    value = <i>{squares[i]}</i>;
+}
+// ...
+```
+At this point, the winning line is displayed in italic,
+which is enough to consider the goal met.
+But if we really want the square to be highlighted instead of its content,
+then we can create a special `CSS class`.
+```
+// css file
+
+.win {
+    color: springgreen;
+    // changing the border's color didn't look nice
+    // and changing the background is just too much
+}
+```
+In order to assign this class to the `<Square />` component being rendered,
+we need to notify it with a prop.
+```
+// Board's renderSquare
+
+// ...
+let value = squares[i];
+let squarewin;
+if (winningLine && (winningLine.some(position => position === i))) {
+    value = <i>{squares[i]}</i>;
+    squarewin = true;
+}
+// ...
+<Square
+    // ...buncha props
+    squarewin={squarewin}
+/>
+```
+And now we can assign the CSS class conditionally in the Square component
+```
+function Square(props) {
+    return (
+        <button className="square" onClick={props.onClick}>
+            {props.value}
+        </button>
+    );
+}
+```
+becomes
+```
+const Square = props => (
+    <button className={props.squarewin ? "square win" : "square"} onClick={props.onClick} >
+        {props.value}
+    </button>
+);
+```
+Et voil&#224;, glorious green!
+

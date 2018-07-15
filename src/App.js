@@ -1,21 +1,27 @@
 import React from 'react';
 import './App.css';
 
-function Square(props) {
-  return (
-    <button className="square" onClick={props.onClick}>
+const Square = props => (
+  <button className={props.squarewin ? "square win" : "square"} onClick={props.onClick} >
       {props.value}
-    </button>
-  );
-}
+  </button>
+);
 
 class Board extends React.Component {
   renderSquare(i) {
+    const { squares, winningLine } = this.props;
+    let value = squares[i];
+    let squarewin;
+    if (winningLine && (winningLine.some(position => position === i))) {
+      value = <i>{squares[i]}</i>;
+      squarewin = true;
+    }
     return (
       <Square
         key={i}
-        value={this.props.squares[i]}
+        value={value}
         onClick={() => this.props.onClick(i)}
+        squarewin={squarewin}
       />
     );
   }
@@ -99,8 +105,10 @@ class Game extends React.Component {
     });
 
     let status;
+    let winningLine;
     if (winner) {
-      status = "Winner: " + winner;
+      status = "Winner: " + winner.name;
+      winningLine = winner.line;
     } else if (stepNumber === 9) {
       status = 'Draw';
     } else {
@@ -118,6 +126,7 @@ class Game extends React.Component {
       <div className="game">
         <div className="game-board">
           <Board
+            winningLine={winningLine}
             squares={current.squares}
             onClick={i => this.handleClick(i)}
           />
@@ -147,7 +156,11 @@ function calculateWinner(squares) {
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+      const winner = {
+        name: squares[a],
+        line: lines[i]
+      }
+      return winner;
     }
   }
   return null;

@@ -32,6 +32,10 @@ ol, ul {
   width: 34px;
 }
 
+.win {
+  color: springgreen;
+}
+
 .square:focus {
   outline: none;
 }
