@@ -127,7 +127,7 @@ class Game extends React.Component {
 
     let reversed;
     if (descOrder) {
-      moves.sort(((a, b) => a.key < b.key));
+      moves.sort((a, b) => a.key < b.key);
       reversed = 'reversed';
     }
     const toggleOrder = <button onClick={() => this.toggleOrder()}>Toggle</button>
