@@ -391,7 +391,7 @@ const moves = history.map((step, move) => {
 `Instead` of doing something like:
 ```
 let desc = move ?
-    `Go to move # + ${move} (${location.row}, ${location.col})` :
+    `Go to move #${move} (${location.row}, ${location.col})` :
     'Go to game start';
 ```
 
@@ -430,3 +430,5 @@ if (previous) {
     locInfo = <small style={{color: 'grey'}}>{newMove.player} at ({row}, {col})</small>;
 }
 ```
+
+Check the diffs of each commit on the Master branch. It should highlight nicely all the steps taken.
