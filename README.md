@@ -422,7 +422,7 @@ const Square = props => (
 );
 ```
 
-Et voil&#224;, glorious green!
+Et [voil&#224;](https://johanfive.github.io/React-Tic-Tac-Toe), glorious green!
 
 And finaly, for what was supposed to be the easiest:
 
