@@ -1,19 +1,28 @@
 # React Tic-Tac-Toe
 ### Solutions for the Tic Tac Toe game improvements challenge at the end of the [official React tutorial](https://reactjs.org/tutorial/tutorial.html).
 
-Project started with [create-react-app](https://www.npmjs.com/package/create-react-app). Main changes in `src/App.js`
+- Display the location for each move in the format (col, row) in the move history list. [&#8711;](#6--when-no-one-wins-display-a-message-about-the-result-being-a-draw)
+- Bold the currently selected item in the move list. [&#8711;](#2--bold-the-currently-selected-item-in-the-move-list)
+- Rewrite Board to use two loops to make the squares instead of hardcoding them. [&#8711;](#3--rewrite-board-to-use-two-loops-to-make-the-squares-instead-of-hardcoding-them)
+- Add a toggle button that lets you sort the moves in either ascending or descending order. [&#8711;](#4--add-a-toggle-button-that-lets-you-sort-the-moves-in-either-ascending-or-descending-order)
+- When someone wins, highlight the three squares that caused the win. [&#8711;](#5--when-someone-wins-highlight-the-three-squares-that-caused-the-win)
+- When no one wins, display a message about the result being a draw. [&#8711;](#1--display-the-location-for-each-move-in-the-format-col-row-in-the-move-history-list)
 
-Initial commit is the `Final Result` of the [wrapping up](https://reactjs.org/tutorial/tutorial.html#wrapping-up) section.
+### Playable demo [here](https://johanfive.github.io/React-Tic-Tac-Toe).
+
+Project started with [create-react-app](https://www.npmjs.com/package/create-react-app). Main changes in [src/App.js](https://github.com/johanfive/React-Tic-Tac-Toe/blob/master/src/App.js)
+
+Initial commit matches the state of `Final Result` in the [wrapping up](https://reactjs.org/tutorial/tutorial.html#wrapping-up) section of the tutorial.
 
 - There are many ways to solve these problems, some better than others.
-The solutions offered here are just what I came up this weekend while feeling like going back to basics just for fun.
+The solutions offered here are just what I came up with this weekend while feeling like going back to basics just for fun.
 There are undoubtedly better approaches.
 
 The tutorial mentions:
 > [Here] are some ideas for improvements that you could make to the tic-tac-toe game which are listed in order of increasing difficulty
 
 I have found that the `increasing difficulty` is hugely relative.
-(For example, point 6 - _the Draw scenario_ - was the easiest to solve.)
+(For example, point 6 - the _Draw_ scenario - was the easiest to solve.)
 
 ## 6 | When no one wins, display a message about the result being a draw.
 ### Check the [diff](https://github.com/johanfive/React-Tic-Tac-Toe/commit/3893934ca31dba3e98b772eeb0977c84a530bbdb#diff-14b1e33d5bf5649597cdc0e4f684daddL85)
@@ -22,18 +31,18 @@ I have found that the `increasing difficulty` is hugely relative.
 // Game
 
 render() {
-    const { history, stepNumber } = this.state;
-    // ...
+   const { history, stepNumber } = this.state;
+   // ...
 
-    let status;
-    if (winner) {
-        status = "Winner: " + winner;
-    } else if (stepNumber === 9) {
-        status = 'Draw';
-    } else {
-        status = "Next player: " + (this.state.xIsNext ? "X" : "O");
-    }
-    // ...
+   let status;
+   if (winner) {
+       status = "Winner: " + winner;
+   } else if (stepNumber === 9) {
+       status = 'Draw';
+   } else {
+       status = "Next player: " + (this.state.xIsNext ? "X" : "O");
+   }
+   // ...
 }
 ```
 
@@ -61,31 +70,29 @@ Admittedly even easier than point `6`, but still also a lot simpler than point `
 // Game
 
 render() {
-    // ...
+   // ...
+   const moves = history.map((step, move) => {
+       // ...
 
-    const moves = history.map((step, move) => {
-        // ...
-
-        let desc = move ?
-            'Go to move #' + move :
-            'Go to game start';
-        if (move === stepNumber) {
-            desc = <b>{desc}</b>;
-        }
-        // ...
-
-    });
+       let desc = move ?
+           'Go to move #' + move :
+           'Go to game start';
+       if (move === stepNumber) {
+           desc = <b>{desc}</b>;
+       }
+       // ...
+   });
 }
 ```
 
-- We make desc modifiable
+- We make desc reassignable
 ```javascript
 const desc
 // becomes:
 let desc
 ```
 
-- And `if` the `index` of the `move` currently displayed `matches` the `stepNumber`, then we are viewing the step the link refers to.
+- And `if` the `move` (an `index` really) currently displayed `matches` the `stepNumber`, then we are viewing the step the link refers to.
 
 ## 3 | Rewrite Board to use two loops to make the squares instead of hardcoding them.
 ### Check the [diff](https://github.com/johanfive/React-Tic-Tac-Toe/commit/696afc0b719676b9fdd6dfb31b2a9f8df46cfd75#diff-14b1e33d5bf5649597cdc0e4f684daddL13)
@@ -94,30 +101,30 @@ let desc
 // Board
 
 renderSquare(i) {
-    // ...
-    return (
-        <Square
-            key={i}
-            // ...
-        />
-    );
+   // ...
+   return (
+       <Square
+           key={i}
+           // ...
+       />
+   );
 }
 
 render() {
-    const board = [];
-    for (let i = 0; i < 3; i++) {
-        const squares = [];
-        for (let j = 0; j < 3; j++) {
-            squares.push(this.renderSquare((i * 3) + j))
-        }
-        const row = <div className="board-row" key={i}>{squares}</div>;
-        board.push(row);
-    }
-    return <div>{board}</div>;
-  }
+   const board = [];
+   for (let i = 0; i < 3; i++) {
+       const squares = [];
+       for (let j = 0; j < 3; j++) {
+           squares.push(this.renderSquare((i * 3) + j))
+       }
+       const row = <div className="board-row" key={i}>{squares}</div>;
+       board.push(row);
+   }
+   return <div>{board}</div>;
+ }
 ```
 
-The key thing here is to remember `jsx`'s magic and that when we pass in a `simple array` as a variable to a jsx element, React just intelligently figures out what to render.
+The key thing here is to remember `jsx`' magic and that when we pass in a `simple array` as a variable to a jsx element, React just intelligently figures out what to render.
 
 We also need to specify a unique `key` for each element of an array otherwise we get the following warning:
 > Warning: Each child in an array or iterator should have a unique "key" prop.
@@ -127,8 +134,8 @@ Hence
 <Square key={i} ... />
 ```
 
-- The 1st loop speciffies how many `divs` we want. `3` divs === 3 `rows`. `i` becomes the unique index of each div.
-- The 2nd loop speciffies how many `<Square />`s we want `per row`. Both `i` & `j` are used to calculate the unique index of each square.
+- The 1st loop specifies how many `divs` we want. `3` divs === 3 `rows`. `i` becomes the unique index of each div.
+- The 2nd loop specifies how many `<Square />`s we want `per row`. Both `i` & `j` are used to calculate the unique index of each square.
 There are `9` squares in total and their `indices` must be a continuity from `0 to 8` in increments of 1.
 
 ## 4 | Add a toggle button that lets you sort the moves in either ascending or descending order.
@@ -138,62 +145,59 @@ There are `9` squares in total and their `indices` must be a continuity from `0 
 // Game
 
 constructor(props) {
-    // ...
-
-    this.state = {
-        // ...
-
-        descOrder: false
-    };
+   // ...
+   this.state = {
+       // ...
+       descOrder: false
+   };
 }
 
 toggleOrder() {
-    this.setState({
-        descOrder: !this.state.descOrder
-    });
+   this.setState({
+       descOrder: !this.state.descOrder
+   });
 }
 // ...
 
 render() {
-    const { history, stepNumber, descOrder } = this.state;
-    // ...
+   const { history, stepNumber, descOrder } = this.state;
+   // ...
 
-    let reversed;
-    if (descOrder) {
-        moves.sort(((a, b) => a.key < b.key));
-        reversed = 'reversed';
-    }
+   let reversed;
+   if (descOrder) {
+       moves.sort(((a, b) => a.key < b.key));
+       reversed = 'reversed';
+   }
 
-    const toggleOrder = <button onClick={() => this.toggleOrder()}>Toggle</button>
+   const toggleOrder = <button onClick={() => this.toggleOrder()}>Toggle</button>
 
-    return (
-        // ...
+   return (
+       // ...
 
-        <div className="game-info">
-            <div>{status}</div>
-            <ol reversed={reversed}>{toggleOrder}{moves}</ol>
-        </div>
-        // ...
-
-    );
+       <div className="game-info">
+           <div>{status}</div>
+           <ol reversed={reversed}>{toggleOrder}{moves}</ol>
+       </div>
+       // ...
+   );
 }
 ```
 
 - We create a new variable in the `state` of `Game`, and set its default value to false.
 ```javascript
 this.state = {
-      // ...
-      descOrder: false
-    };
+     // ...
+     descOrder: false
+   };
 ```
 
 - We create a function to switch its value from the opposite of what it last was.
 If `false`, the order is `ascending`, if `true`, the order is `descending`.
 ```javascript
 toggleOrder() {
-    this.setState({
-        descOrder: !this.state.descOrder
-    });
+   this.setState({
+       descOrder: !this.state.descOrder
+   });
 }
 ```
 
@@ -206,8 +210,8 @@ const { history, stepNumber, descOrder } = this.state;
 ```javascript
 let reversed; // We need this one to update the numbers of each <li> in the <ol>
 if (descOrder) {
-    moves.sort(((a, b) => a.key < b.key)); // pass a compareFunction to Array.sort()
-    reversed = 'reversed'; // For HTML5 <ol reversed>
+   moves.sort(((a, b) => a.key < b.key)); // pass a compareFunction to Array.sort()
+   reversed = 'reversed'; // For HTML5 <ol reversed>
 }
 ```
 
@@ -219,8 +223,8 @@ const toggleOrder = <button onClick={() => this.toggleOrder()}>Toggle</button>
 - We update the return value of the render method
 ```javascript
 <div className="game-info">
-    <div>{status}</div>
-    <ol reversed={reversed}>{toggleOrder}{moves}</ol>
+   <div>{status}</div>
+   <ol reversed={reversed}>{toggleOrder}{moves}</ol>
 </div>
 ```
 
@@ -229,14 +233,14 @@ const toggleOrder = <button onClick={() => this.toggleOrder()}>Toggle</button>
 - First, we modify the `return value` of the `calculateWinner()` function
 ```javascript
 if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-    const winner = {
-        name: squares[a],
-        line: lines[i]
-    }
-    return winner;
+   const winner = {
+       name: squares[a],
+       line: lines[i]
+   }
+   return winner;
 }
 ```
-Now instead of just getting an `X` or an `O`, we also get the winning line (eg: `[0, 1, 2]`).
+Now instead of getting just an `X` or an `O`, we also get the winning line (eg: `[0, 1, 2]`).
 
 ### Check the [diff](https://github.com/johanfive/React-Tic-Tac-Toe/commit/14f88c019971ffb8069cd87a119c4279eac490a0#diff-ac5f32af117b8a14f49fce70447dd64fL32)
 
@@ -244,62 +248,58 @@ Now instead of just getting an `X` or an `O`, we also get the winning line (eg: 
 // Square
 
 const Square = props => (
-    <button className={props.squarewin ? "square win" : "square"} onClick={props.onClick} >
-        {props.value}
-    </button>
+   <button className={props.squarewin ? "square win" : "square"} onClick={props.onClick} >
+       {props.value}
+   </button>
 );
 
 
 // Board
 
 renderSquare(i) {
-    const { squares, winningLine } = this.props;
-    let value = squares[i];
-    let squarewin;
-    if (winningLine && (winningLine.some(position => position === i))) {
-        value = <i>{squares[i]}</i>;
-        squarewin = true;
-    }
-    return (
-        <Square
-            key={i}
-            value={value}
-            squarewin={squarewin}
-            // ...
+   const { squares, winningLine } = this.props;
+   let value = squares[i];
+   let squarewin;
+   if (winningLine && (winningLine.some(position => position === i))) {
+       value = <i>{squares[i]}</i>;
+       squarewin = true;
+   }
+   return (
+       <Square
+           key={i}
+           value={value}
+           squarewin={squarewin}
+           // ...
 
-        />
-    );
+       />
+   );
 }
 
 
 // Game
 
 render() {
-    // ...
+   // ...
+   const winner = calculateWinner(current.squares); // unchanged except for its return value
+   //...
 
-    const winner = calculateWinner(current.squares); // unchanged except for its return value
-    //...
+   let status;
+   let winningLine;
+   if (winner) {
+       status = `Winner: ${winner.name}`;
+       winningLine = winner.line;
+   } // ...
 
-    let status;
-    let winningLine;
-    if (winner) {
-        status = `Winner: ${winner.name}`;
-        winningLine = winner.line;
-    } // ...
-
-    return (
-        // ...
-
-        <div className="game-board">
-            <Board
-                winningLine={winningLine}
-                // ...
-
-            />
-        </div>
-        //...
-
-    );
+   return (
+       // ...
+       <div className="game-board">
+           <Board
+               winningLine={winningLine}
+               // ...
+           />
+       </div>
+       //...
+   );
 }
 ```
 
@@ -311,45 +311,45 @@ const winner = calculateWinner(current.squares); // unchanged except for its ret
 let status;
 let winningLine;
 if (winner) {
-    status = `Winner: ${winner.name}`;
-    winningLine = winner.line;
+   status = `Winner: ${winner.name}`;
+   winningLine = winner.line;
 }
 ```
 
 - We pass the `winning line` as a `prop` to `<Board />`
 ```javascript
 <div className="game-board">
-    <Board
-        winningLine={winningLine}
-        // ...
-    />
+   <Board
+       winningLine={winningLine}
+       // ...
+   />
 </div>
 ```
 
 - We update `Board`'s `renderSquare` in preparation for making use of its new `winningLine prop` by destructuring
 ```
 renderSquare(i) {
-    return (
-      <Square
-        key={i}
-        value={this.props.squares[i]}
-        onClick={() => this.props.onClick(i)}
-      />
-    );
-  }
+   return (
+     <Square
+       key={i}
+       value={this.props.squares[i]}
+       onClick={() => this.props.onClick(i)}
+     />
+   );
+ }
 ```
 becomes
 ```javascript
 renderSquare(i) {
-    const { squares } = this.props;
-    let value = squares[i];
-    return (
-        <Square
-            key={i}
-            value={value}
-            onClick={() => this.props.onClick(i)}
-        />
-    );
+   const { squares } = this.props;
+   let value = squares[i];
+   return (
+       <Square
+           key={i}
+           value={value}
+           onClick={() => this.props.onClick(i)}
+       />
+   );
 }
 ```
 
@@ -360,9 +360,8 @@ then this square should be highlighted
 const { squares, winningLine } = this.props;
 // ...
 if (winningLine && (winningLine.some(position => position === i))) {
-    value = <i>{squares[i]}</i>;
+   value = <i>{squares[i]}</i>;
 }
-// ...
 ```
 
 At this point, the winning line is displayed in italic,
@@ -374,9 +373,9 @@ then...
 // css file
 
 .win {
-    color: springgreen;
-    // changing the border's color didn't look nice
-    // and changing the background is just too much green
+   color: springgreen;
+   // changing the border's color didn't look nice
+   // and changing the background is just too much green
 }
 ```
 
@@ -386,44 +385,44 @@ we need to notify it with a prop.
 // Board
 
 renderSquare(i) {
-    // ...
+   // ...
 
-    let value = squares[i];
-    let squarewin;
-    if (winningLine && (winningLine.some(position => position === i))) {
-        value = <i>{squares[i]}</i>;
-        squarewin = true;
-    }
-    // ...
-    return (
-        <Square
-            // ...buncha props
-            squarewin={squarewin}
-        />
-    );
+   let value = squares[i];
+   let squarewin;
+   if (winningLine && (winningLine.some(position => position === i))) {
+       value = <i>{squares[i]}</i>;
+       squarewin = true;
+   }
+   // ...
+   return (
+       <Square
+           // ...buncha props
+           squarewin={squarewin}
+       />
+   );
 }
 ```
 
 - And now we can assign the CSS class `conditionally` in the Square component
 ```
 function Square(props) {
-    return (
-        <button className="square" onClick={props.onClick}>
-            {props.value}
-        </button>
-    );
+   return (
+       <button className="square" onClick={props.onClick}>
+           {props.value}
+       </button>
+   );
 }
 ```
 becomes
 ```javascript
 const Square = props => (
-    <button className={props.squarewin ? "square win" : "square"} onClick={props.onClick} >
-        {props.value}
-    </button>
+   <button className={props.squarewin ? "square win" : "square"} onClick={props.onClick} >
+       {props.value}
+   </button>
 );
 ```
 
-Et [voil&#224;](https://johanfive.github.io/React-Tic-Tac-Toe), glorious green!
+Et voil&#224;, <span style='color: springgreen'>glorious green</span>!
 
 And finaly, for what was supposed to be the easiest:
 
@@ -436,53 +435,53 @@ So we make functions:
 
 ```javascript
 /**
- * Get which square is different in the current board
- * compared to the previous one
- * @param {array} previous. The squares prop of a particular step in history
- * @param {array} current. The squares prop of the step being assessed
- */
+* Get which square is different in the current board
+* compared to the previous one
+* @param {array} previous. The squares prop of a particular step in history
+* @param {array} current. The squares prop of the step being assessed
+*/
 function getNewMove(previous, current) {
-    let nextMove = {};
-    current.forEach((index, i) => {
-        if (previous[i] !== index) {
-            nextMove.index = i;
-            nextMove.player = current[i];
-        }
-    });
-    return nextMove;
+   let nextMove = {};
+   current.forEach((index, i) => {
+       if (previous[i] !== index) {
+           nextMove.index = i;
+           nextMove.player = current[i];
+       }
+   });
+   return nextMove;
 }
 ```
 
 Given a Square's index, return its location on the Board
 ```javascript
 function getLocation(index) {
-    const row = getRowNum(index);
-    const col = getColNum(index);
-    return {row, col};
+   const row = getRowNum(index);
+   const col = getColNum(index);
+   return {row, col};
 }
 ```
 
 Given a Square's index, return the row it belongs to on the Board.
 ```javascript
 function getRowNum(index) {
-    let row = 1;
-    if (index > 2) {
-        row = index > 5 ? 3 : 2;
-    }
-    return row;
+   let row = 1;
+   if (index > 2) {
+       row = index > 5 ? 3 : 2;
+   }
+   return row;
 }
 ```
 
 Given a Square's index, return the column it belongs to on the Board.
 ```javascript
 function getColNum(index) {
-    let col = 3;
-    if (index % 3 === 0) {
-        col = 1;
-    } else if (index === 1 || index === 4 || index === 7) {
-        col = 2;
-    }
-    return col;
+   let col = 3;
+   if (index % 3 === 0) {
+       col = 1;
+   } else if (index === 1 || index === 4 || index === 7) {
+       col = 2;
+   }
+   return col;
 }
 ```
 
@@ -494,29 +493,28 @@ And now we use them.
 // Game
 
 render() {
-    // ...
+   // ...
 
-    const moves = history.map((step, move) => {
-        const previous = history[move - 1];
-        let location, locInfo;
-        if (previous) {
-            const newMove = getNewMove(previous.squares, step.squares);
-            location = getLocation(newMove.index);
-            const row = <div className="tooltip">{location.row}<span className="tooltiptext">Row</span></div>;
-            const col = <div className="tooltip">{location.col}<span className="tooltiptext">Column</span></div>;
-            locInfo = <small style={{color: 'grey'}}>{newMove.player} at ({row}, {col})</small>;
-        }
-        // ...
+   const moves = history.map((step, move) => {
+       const previous = history[move - 1];
+       let location, locInfo;
+       if (previous) {
+           const newMove = getNewMove(previous.squares, step.squares);
+           location = getLocation(newMove.index);
+           const row = <div className="tooltip">{location.row}<span className="tooltiptext">Row</span></div>;
+           const col = <div className="tooltip">{location.col}<span className="tooltiptext">Column</span></div>;
+           locInfo = <small style={{color: 'grey'}}>{newMove.player} at ({row}, {col})</small>;
+       }
+       // ...
 
-        return (
-            <li key={move}>
-                <button onClick={() => this.jumpTo(move)}>{desc}</button>
-                &nbsp;{locInfo}
-            </li>
-        );
-    });
-    // ...
-
+       return (
+           <li key={move}>
+               <button onClick={() => this.jumpTo(move)}>{desc}</button>
+               &nbsp;{locInfo}
+           </li>
+       );
+   });
+   // ...
 }
 ```
 
@@ -526,8 +524,8 @@ render() {
 
 // ...
 const moves = history.map((step, move) => {
-    const previous = history[move - 1];
-    // ...
+   const previous = history[move - 1];
+   // ...
 }
 ```
 
@@ -538,11 +536,11 @@ const newMove = getNewMove(previous.squares, step.squares);
 in
 ```javascript
 const moves = history.map((step, move) => {
-    const previous = history[move - 1];
-    if (previous) { // There is no prior move at the beginning of the game
-        const newMove = getNewMove(previous.squares, step.squares);
-    }
-    // ...
+   const previous = history[move - 1];
+   if (previous) { // There is no prior move at the beginning of the game
+       const newMove = getNewMove(previous.squares, step.squares);
+   }
+   // ...
 }
 ```
 
@@ -553,13 +551,13 @@ location = getLocation(newMove.index);
 in
 ```javascript
 const moves = history.map((step, move) => {
-    const previous = history[move - 1];
-    let location;
-    if (previous) {
-        const newMove = getNewMove(previous.squares, step.squares);
-        location = getLocation(newMove.index);
-    }
-    // ...
+   const previous = history[move - 1];
+   let location;
+   if (previous) {
+       const newMove = getNewMove(previous.squares, step.squares);
+       location = getLocation(newMove.index);
+   }
+   // ...
 }
 ```
 
@@ -568,43 +566,43 @@ const moves = history.map((step, move) => {
 `Instead` of doing something like:
 ```
 let desc = move ?
-    `Go to move #${move} (${location.row}, ${location.col})` :
-    'Go to game start';
+   `Go to move #${move} (${location.row}, ${location.col})` :
+   'Go to game start';
 ```
 
 I prefer to get the location info out of the button,
 and provide a `tooltip` so that we know what each number corresponds to.
 ```javascript
 const moves = history.map((step, move) => {
-    const previous = history[move - 1];
-    let location, locInfo; // add locInfo
-    if (previous) {
-        const newMove = getNewMove(previous.squares, step.squares);
-        location = getLocation(newMove.index);
-        const row = <div className="tooltip">{location.row}<span className="tooltiptext">Row</span></div>;
-        const col = <div className="tooltip">{location.col}<span className="tooltiptext">Column</span></div>;
-        locInfo = <small style={{color: 'grey'}}>({row}, {col})</small>;
-    }
-    // ...
+   const previous = history[move - 1];
+   let location, locInfo; // add locInfo
+   if (previous) {
+       const newMove = getNewMove(previous.squares, step.squares);
+       location = getLocation(newMove.index);
+       const row = <div className="tooltip">{location.row}<span className="tooltiptext">Row</span></div>;
+       const col = <div className="tooltip">{location.col}<span className="tooltiptext">Column</span></div>;
+       locInfo = <small style={{color: 'grey'}}>({row}, {col})</small>;
+   }
+   // ...
 }
 ```
-(Remember to update the CSS file so the tooltip looks nice. I got mine straight for W3S [here](https://www.w3schools.com/howto/howto_css_tooltip.asp))
+(Remember to update the CSS file so the tooltip looks nice. I got mine straight for W3S [here](https://www.w3schools.com/howto/howto_css_tooltip.asp "This link might become obsolete"))
 
 - Now we can insert the location information in the moves list
 ```javascript
 return (
-    <li key={move}>
-        <button onClick={() => this.jumpTo(move)}>{desc}</button>
-        &nbsp;{locInfo}
-    </li>
+   <li key={move}>
+       <button onClick={() => this.jumpTo(move)}>{desc}</button>
+       &nbsp;{locInfo}
+   </li>
 );
 ```
 
 - Bonus: thanks to the `getNewMove()` function, it's easy to specify which player is making the move
 ```javascript
 if (previous) {
-    // ...
-    locInfo = <small style={{color: 'grey'}}>{newMove.player} at ({row}, {col})</small>;
+   // ...
+   locInfo = <small style={{color: 'grey'}}>{newMove.player} at ({row}, {col})</small>;
 }
 ```
 
